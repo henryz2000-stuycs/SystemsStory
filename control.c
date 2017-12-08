@@ -1,6 +1,10 @@
 //standard
 #include <stdio.h>
 #include <stdlib.h>
+
+//others
+#include <sys/wait.h>
+#include <unistd.h>
 #include <string.h>
 
 //both semaphore && shared memory
@@ -60,6 +64,22 @@ int main(int argc, char **argv){
     sem = semget(KEY, 1, 0);
     if (sem != -1){
       printf("semaphore value: %d\n", semctl(sem, 0, GETVAL));
+      printf("===\n");
+
+      char ** cmds = calloc(2, sizeof(char *));
+      cmds[0] = "cat";
+      cmds[1] = "story.txt";
+
+      int f = fork();
+      if (!f){
+	execvp(cmds[0], cmds);
+      }
+      else{
+	int status;
+	f = wait(&status);
+      }
+      
+      printf("===\n");
     }
     else{
       printf("semaphore doesn't exist\n");
