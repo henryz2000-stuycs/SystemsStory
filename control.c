@@ -27,6 +27,13 @@ int main(int argc, char **argv){
   int shm = -1;
   int fd = -1;
   
+  union semun {
+    int              val;
+    struct semid_ds *buf;
+    unsigned short  *array;
+    struct seminfo  *__buf;
+  } arg;
+
   /*
     If creating (command line argument: -c):
     Should make the shared memory, semaphore and file (open the file with the truncate flag).
@@ -35,14 +42,19 @@ int main(int argc, char **argv){
   if (strcmp(argv[1], "-c") == 0){
     
     //create semaphore, shared memory, and file
-    sem = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0644);
+    sem = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0644);    
     shm = shmget(KEY, 1024, IPC_CREAT | IPC_EXCL | 0644);
-    fd = open("story.txt", O_CREAT | O_EXCL | O_TRUNC, 0644);
-    
+    fd = open("story.txt", O_CREAT | O_TRUNC, 0644);
+    close(fd);
+       
     if (sem != -1 && shm != -1){
-      semctl(sem, 0, SETVAL, atoi(argv[2]));
       printf("semaphore created: %d\n", sem);
-      printf("value set: %d\n", semctl(sem, 0, GETVAL));
+      printf("shared memory created: %d\n", shm);
+      printf("file created: %d\n", fd);
+      
+      arg.val = 1;
+      semctl(sem, 0, SETVAL, arg);
+      printf("semaphore value set: %d\n", semctl(sem, 0, GETVAL));
     }
     else if (sem == -1 && shm == -1){
       printf("both semaphore and shared memory already exist\n");
@@ -61,31 +73,13 @@ int main(int argc, char **argv){
     This mode does not need to interact with the semaphore
    */
   else if (strcmp(argv[1], "-v") == 0){
-    sem = semget(KEY, 1, 0);
-    if (sem != -1){
-      printf("semaphore value: %d\n", semctl(sem, 0, GETVAL));
-      printf("===\n");
-
-      char ** cmds = calloc(2, sizeof(char *));
-      cmds[0] = "cat";
-      cmds[1] = "story.txt";
-
-      int f = fork();
-      if (!f){
-	execvp(cmds[0], cmds);
-      }
-      else{
-	int status;
-	f = wait(&status);
-      }
-      
-      printf("===\n");
-    }
-    else{
-      printf("semaphore doesn't exist\n");
-    }
+    fd = open("story.txt", O_RDONLY, 0644);
+    char story[1024];
+    read(fd, story, sizeof(story));
+    printf("story: \n\t%s\n", story);
+    close(fd);
   }
-
+    
   /*
     If removing (command line argument: -r)
     Remove the shared memory and the semaphore
@@ -93,9 +87,22 @@ int main(int argc, char **argv){
    */
   else if (strcmp(argv[1], "-r") == 0){
     sem = semget(KEY, 1, 0);
+    shm = shmget(KEY, 1024, 0);
     if (sem != -1){
       semctl(sem, 0, IPC_RMID);
       printf("semaphore removed: %d\n", sem);
+      
+      shmctl(shm, IPC_RMID, 0);
+      printf("shared memory removed: %d\n", shm);
+
+      fd = open("story.txt", O_RDONLY, 0644);
+      char story[1024];
+      read(fd, story, sizeof(story));
+      printf("final story: \n\t%s\n", story);
+
+      remove("story.txt");
+      printf("file removed: %d\n", fd);
+      close(fd);
     }
     else{
       printf("semaphore doesn't exist\n");
