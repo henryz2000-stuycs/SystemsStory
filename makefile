@@ -11,6 +11,7 @@ client.o: client.c
 
 run: all
 	./$(NAME) -c 4
+	./client
 	./$(NAME) -v
 	./$(NAME) -c 3
 	./$(NAME) -v
