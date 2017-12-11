@@ -4,7 +4,7 @@ all: $(NAME1).o $(NAME2).o
 	gcc -o $(NAME1) $(NAME1).o
 	gcc -o $(NAME2) $(NAME2).o
 
-$(NAME).o: $(NAME1).c $(NAME2).c
+$(NAME).o: $(NAME1).c $(NAME2).c work15.h
 	gcc -c $(NAME1).c
 	gcc -c $(NAME2).c
 

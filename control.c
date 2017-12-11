@@ -1,26 +1,4 @@
-//standard
-#include <stdio.h>
-#include <stdlib.h>
-
-//others
-#include <sys/wait.h>
-#include <unistd.h>
-#include <string.h>
-
-//both semaphore && shared memory
-#include <sys/types.h>
-#include <sys/ipc.h>
-
-//semaphore
-#include <sys/sem.h>
-
-//shared memory
-#include <sys/shm.h>
-
-//file
-#include <fcntl.h>
-#include <sys/stat.h>
-
+#include "work15.h"
 
 int main(int argc, char **argv){
   int KEY = ftok("story.txt", 24601);
@@ -80,7 +58,7 @@ int main(int argc, char **argv){
     int size = sb.st_size;
     char * s = calloc(1, size+1);
     read(fd, s, size);
-    printf("story: \n\t%s\n", s);
+    printf("story: \n%s\n", s);
     close(fd);
   }
 
@@ -105,7 +83,7 @@ int main(int argc, char **argv){
       int size = sb.st_size;
       char * s = calloc(1, size+1);
       read(fd, s, size);
-      printf("final story: \n\t%s\n", s);
+      printf("final story: \n%s\n", s);
 
       remove("story.txt");
       printf("file removed: %d\n", fd);
