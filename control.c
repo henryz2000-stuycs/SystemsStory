@@ -19,6 +19,7 @@
 
 //file
 #include <fcntl.h>
+#include <sys/stat.h>
 
 
 int main(int argc, char **argv){
@@ -74,9 +75,12 @@ int main(int argc, char **argv){
    */
   else if (strcmp(argv[1], "-v") == 0){
     fd = open("story.txt", O_RDONLY, 0644);
-    char story[1024];
-    read(fd, story, sizeof(story));
-    printf("story: \n\t%s\n", story);
+    struct stat sb;
+    stat("story.txt", &sb);
+    int size = sb.st_size;
+    char * s = calloc(1, size+1);
+    read(fd, s, size);
+    printf("story: \n\t%s\n", s);
     close(fd);
   }
     
@@ -96,9 +100,12 @@ int main(int argc, char **argv){
       printf("shared memory removed: %d\n", shm);
 
       fd = open("story.txt", O_RDONLY, 0644);
-      char story[1024];
-      read(fd, story, sizeof(story));
-      printf("final story: \n\t%s\n", story);
+      struct stat sb;
+      stat("story.txt", &sb);
+      int size = sb.st_size;
+      char * s = calloc(1, size+1);
+      read(fd, s, size);
+      printf("final story: \n\t%s\n", s);
 
       remove("story.txt");
       printf("file removed: %d\n", fd);
