@@ -39,8 +39,9 @@ int main(){
   read(desc, last_line, last_line_size);
   printf("Last line added to file:\n%s\n", last_line);
   printf("Add next line:\n");
-  char next_line[256];
-  scanf("%s", next_line);
+  char * next_line;
+  fgets(next_line, 256, stdin);
+  printf("Line recorded as: %s\n", next_line);
   int buf_size = strlen(next_line);
   write(desc, next_line, buf_size);
   close(desc);
