@@ -1,27 +1,17 @@
-NAME=control
-all: $(NAME).o client.o
-	gcc -o $(NAME) $(NAME).o
-	gcc -o client client.o
+NAME1=control
+NAME2=client
+all: $(NAME1).o $(NAME2).o
+	gcc -o $(NAME1) $(NAME1).o
+	gcc -o $(NAME2) $(NAME2).o
 
-$(NAME).o: $(NAME).c
-	gcc -c $(NAME).c
-
-client.o: client.c
-	gcc -c client.c
-
-run: all
-	./$(NAME) -c 4
-	./client
-	./$(NAME) -v
-	./client
-	./client
-	./$(NAME) -v
-	./$(NAME) -c 3
-	./$(NAME) -v
-	./$(NAME) -r
+$(NAME).o: $(NAME1).c $(NAME2).c
+	gcc -c $(NAME1).c
+	gcc -c $(NAME2).c
 
 clean:
-	rm -f ./$(NAME)
-	rm -f ./$(NAME).o
+	rm -f ./$(NAME1)
+	rm -f ./$(NAME1).o
+	rm -f ./$(NAME2)
+	rm -f ./$(NAME2).o
 	rm -f story.txt
 	rm *~
