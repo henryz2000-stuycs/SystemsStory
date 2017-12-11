@@ -33,7 +33,6 @@ int main(){
   }
   int * shmem  = (int *)shmat(shmid, 0, 0);
   int last_line_size = *shmem;
-  printf("%d\n", last_line_size);
   int desc = open("story.txt", O_RDONLY | O_WRONLY, 644);
   lseek(desc, last_line_size, SEEK_END);
   char last_line[last_line_size];
