@@ -26,7 +26,7 @@ int main(int argc, char **argv){
   int sem = -1;
   int shm = -1;
   int fd = -1;
-  
+
   union semun {
     int              val;
     struct semid_ds *buf;
@@ -40,18 +40,18 @@ int main(int argc, char **argv){
     Set any values that are needed.
    */
   if (strcmp(argv[1], "-c") == 0){
-    
+
     //create semaphore, shared memory, and file
-    sem = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0644);    
+    sem = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0644);
     shm = shmget(KEY, 1024, IPC_CREAT | IPC_EXCL | 0644);
     fd = open("story.txt", O_CREAT | O_TRUNC, 0644);
     close(fd);
-       
+
     if (sem != -1 && shm != -1){
       printf("semaphore created: %d\n", sem);
       printf("shared memory created: %d\n", shm);
       printf("file created: %d\n", fd);
-      
+
       arg.val = 1;
       semctl(sem, 0, SETVAL, arg);
       printf("semaphore value set: %d\n", semctl(sem, 0, GETVAL));
@@ -79,7 +79,7 @@ int main(int argc, char **argv){
     printf("story: \n\t%s\n", story);
     close(fd);
   }
-    
+
   /*
     If removing (command line argument: -r)
     Remove the shared memory and the semaphore
@@ -91,7 +91,7 @@ int main(int argc, char **argv){
     if (sem != -1){
       semctl(sem, 0, IPC_RMID);
       printf("semaphore removed: %d\n", sem);
-      
+
       shmctl(shm, IPC_RMID, 0);
       printf("shared memory removed: %d\n", shm);
 
@@ -108,6 +108,6 @@ int main(int argc, char **argv){
       printf("semaphore doesn't exist\n");
     }
   }
-  
+
   return 0;
 }

@@ -1,10 +1,13 @@
 NAME=control
-all: $(NAME).o
+all: $(NAME).o client.o
 	gcc -o $(NAME) $(NAME).o
+	gcc -o client client.o
 
 $(NAME).o: $(NAME).c
 	gcc -c $(NAME).c
 
+client.o: client.c
+	gcc -c client.c
 
 run: all
 	./$(NAME) -c 4
